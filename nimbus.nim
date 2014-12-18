@@ -14,12 +14,14 @@ proc help(topic: string): string =
         result = about() & "\n"
         result &= " -s, --server=<server>     :: Assigns a server for Nimbus to connect to. Default is irc.freenode.net\n" &
                   " -p, --port=<port>         :: Assigns a port for Nimbus to connect on. Default is 6667\n" &
-                  " -u, --username=<user>     :: Assigns a username to Nimbus. Default is NimbusBot\n" &
+                  " -u, --user=<user>         :: Assigns a username to Nimbus. Default is NimbusBot\n" &
                   " -n, --nick=<nick>         :: Assigns a nick for to Nimbus. Default is Nimbus\n" &
                   " -c, --channels=<channels> :: Assigns a list of channels for Nimbus to connect to (seperated by comma and with no #. Default is #nim and #nim-offtopic\n" &
-                  " -a, --auth=<password>     :: Assigns a password to Nimbus for authenticating with the server. If --auth is not passed, no authentication is done\n" &
                   " -l, --log=<log>           :: If passed, logs the output to <log>\n" &
-                  " -v, --verbose             :: If passed, outputs the responses recieved from the server"
+                  " -V, --verbose             :: If passed, outputs the responses recieved from the server\n" &
+                  " -v, --version             :: Print the version number\n" &
+                  " -a, --about               :: Print information about Nimbus\n" &
+                  " -h, --help=[topic]        :: Print this help message, or help about the topic, if passed"
 
     else:
         result = "fooey"
@@ -37,7 +39,6 @@ var server: string = "irc.freenode.net"
 var port: Port = 6667.Port
 var username: string = "NimbusBot"
 var nick: string = "Nimbus"
-var pass: string = ""
 var channels: seq[string] = @["#nim", "#nim-offtopic"]
 var log: File
 var islogging: bool = false
@@ -68,7 +69,7 @@ for kind, key, val in getopt():
                 of "p", "port":
                     port = parseInt(val).Port
 
-                of "u", "username":
+                of "u", "user":
                     username = val
 
                 of "n", "nick":
@@ -81,11 +82,12 @@ for kind, key, val in getopt():
                     log = open(val, fmWrite)
                     islogging = true
 
-                of "v", "verbose":
+                of "V", "verbose":
                     outputting = true
 
                 else:
                     writeln(stderr, "invalid parameter: " & key)
+                    quit()
 
         of cmdEnd:
             assert(false)
@@ -97,10 +99,6 @@ connect(sock, server, port)
 
 send(sock, "NICK " & nick & "\r\n")
 send(sock, "USER " & nick & " " & nick & " " & nick & " :Nimbus IRC\r\n")
-
-if pass != "":
-    send(sock, "PRIVMSG NickServ :identify " & pass & "\r\n")
-
 send(sock, "MODE " & nick & " +i\r\n")
 
 while true:
@@ -112,7 +110,7 @@ while true:
     if outputting:
         echo(buffer)
 
-    if (endsWith(buffer, "is now your hidden host (set by services.)")) or (pass == "" and endsWith(buffer, "MODE " & nick & " :+i")):
+    if buffer == (":" & nick & " MODE " & nick & " :+i"):
         break
 
 for channel in channels:
