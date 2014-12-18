@@ -4,3 +4,4 @@
 -4- Implement at command
 -5- Branch for clang, gcc 3.4.6, and pcc
 -6- Authing
+-7- Build system needs to generate an eval.nim.cfg that hard paths to pcc cc

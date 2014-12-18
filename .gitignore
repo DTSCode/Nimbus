@@ -3,3 +3,4 @@ nimbus
 eval
 eval.nim
 pcc*
+build/
