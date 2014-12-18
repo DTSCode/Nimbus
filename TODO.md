@@ -1,0 +1,4 @@
+-1- Write proper build system
+-2- Implement ghosting in the bot
+-3- Use configuration files
+-4- Implement at command
