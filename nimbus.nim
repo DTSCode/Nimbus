@@ -18,7 +18,8 @@ proc help(topic: string): string =
                   " -n, --nick=<nick>         :: Assigns a nick for to Nimbus. Default is Nimbus\n" &
                   " -c, --channels=<channels> :: Assigns a list of channels for Nimbus to connect to (seperated by comma and with no #. Default is #nim and #nim-offtopic\n" &
                   " -a, --auth=<password>     :: Assigns a password to Nimbus for authenticating with the server. If --auth is not passed, no authentication is done\n" &
-                  " -l, --log=<log>           :: Logs the output to <log>"
+                  " -l, --log=<log>           :: If passed, logs the output to <log>\n" &
+                  " -v, --verbose             :: If passed, outputs the responses recieved from the server"
 
     else:
         result = "fooey"
@@ -40,6 +41,7 @@ var pass: string = ""
 var channels: seq[string] = @["#nim", "#nim-offtopic"]
 var log: File
 var islogging: bool = false
+var outputting: bool = false
 
 for kind, key, val in getopt():
     case kind:
@@ -74,11 +76,13 @@ for kind, key, val in getopt():
 
                 of "c", "channels":
                     channels = chansplit(val)
-                    echo($channels)
 
                 of "l", "log":
                     log = open(val, fmWrite)
                     islogging = true
+
+                of "v", "verbose":
+                    outputting = true
 
                 else:
                     writeln(stderr, "invalid parameter: " & key)
@@ -105,7 +109,8 @@ while true:
     if islogging:
         writeln(log, buffer)
 
-    echo(buffer)
+    if outputting:
+        echo(buffer)
 
     if (endsWith(buffer, "is now your hidden host (set by services.)")) or (pass == "" and endsWith(buffer, "MODE " & nick & " :+i")):
         break
@@ -124,7 +129,9 @@ while true:
         writeln(log, buffer)
 
     var ircmsg = split(buffer, " ")
-    echo($ircmsg)
+
+    if outputting:
+        echo($ircmsg)
 
     if ircmsg[0] == "PING":
         send(sock, "PONG " & ircmsg[1] & "\r\n")
