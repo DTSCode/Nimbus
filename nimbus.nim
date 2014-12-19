@@ -145,8 +145,9 @@ while true:
             outHandle.writeln(join(ircmsg[4 .. ircmsg.high], " "))
             close(outHandle)
 
-            var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --skipCfg --skipUserCfg --skipParentCfg --verbosity:0 " & filename)
 
+            var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --verbosity:0 --cc:ucc " & filename)
+#            var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --verbosity:0 " & filename)
             if resultInitial.output == "":
                 var resultSecond = execCmdEx("./" & filename[0 .. (filename.len - ".nim".len - 1)])
 
