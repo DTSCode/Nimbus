@@ -2,7 +2,7 @@
 -2- Implement ghosting in the bot
 -3- Use configuration files
 -4- Implement at command
--5- Branch for clang, gcc 3.4.6, and pcc
+-5- Branch for clang, gcc 3.4.6
 -6- Authing
 -7- Build system needs to generate an eval.nim.cfg that hard paths to pcc cc
 -8- Add real daemon support

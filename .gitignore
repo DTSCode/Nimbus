@@ -1,6 +1,3 @@
-nimcache/
-nimbus
-eval
-eval.nim
-pcc*
+src/
 build/
+eval/

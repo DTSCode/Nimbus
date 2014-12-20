@@ -18,7 +18,7 @@ proc help(topic: string): string =
                   " -n, --nick=<nick>         :: Assigns a nick for to Nimbus. Default is Nimbus\n" &
                   " -c, --channels=<channels> :: Assigns a list of channels for Nimbus to connect to (seperated by comma and with no #. Default is #nim and #nim-offtopic\n" &
                   " -l, --log=<log>           :: If passed, logs the output to <log>\n" &
-                  " -V, --verbose             :: If passed, outputs the responses recieved from the server\n" &
+                  " -N, --noverbose           :: If passed, outputs the responses recieved from the server\n" &
                   " -v, --version             :: Print the version number\n" &
                   " -a, --about               :: Print information about Nimbus\n" &
                   " -h, --help=[topic]        :: Print this help message, or help about the topic, if passed"
@@ -42,7 +42,7 @@ var nick: string = "Nimbus"
 var channels: seq[string] = @["#nim", "#nim-offtopic"]
 var log: File
 var islogging: bool = false
-var outputting: bool = false
+var outputting: bool = true
 
 for kind, key, val in getopt():
     case kind:
@@ -82,8 +82,8 @@ for kind, key, val in getopt():
                     log = open(val, fmWrite)
                     islogging = true
 
-                of "V", "verbose":
-                    outputting = true
+                of "N", "noverbose":
+                    outputting = false
 
                 else:
                     writeln(stderr, "invalid parameter: " & key)
@@ -137,17 +137,16 @@ while true:
     elif ircmsg[1] == "PRIVMSG":
         var nick: string = getNick(ircmsg[0])
 
-        if ircmsg[3] == ":,eval":
+        if ircmsg[3] == ":.eval":
             let filename = "eval.nim"
             var outHandle = open(filename, fmWrite)
             var result: string
 
-            outHandle.writeln(join(ircmsg[4 .. ircmsg.high], " "))
+            outHandle.writeln(replace(join(ircmsg[4 .. ircmsg.high], " "), ";", "\n")
             close(outHandle)
 
-
             var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --verbosity:0 --cc:ucc " & filename)
-#            var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --verbosity:0 " & filename)
+
             if resultInitial.output == "":
                 var resultSecond = execCmdEx("./" & filename[0 .. (filename.len - ".nim".len - 1)])
 
