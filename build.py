@@ -1,6 +1,6 @@
 #!/usr/bin/python2.7
 
-import os, sys, urllib, tarfile, subprocess
+import os, sys, urllib, tarfile, subprocess, glob
 
 environment = [
     'src',
@@ -47,8 +47,9 @@ print(' building build/pcc/pcc...')
 
 os.chdir('build/pcc')
 
-subprocess.call(['../../src/pcc/pcc-20141219/configure', '--prefix=' + os.getcwd() + 'build/pcc'])
+subprocess.call([glob.glob("../../src/pcc/pcc-*/configure")[0], '--prefix=' + os.getcwd() + 'build/pcc'])
 subprocess.call(['make'])
 subprocess.call(['make', 'install'])
 
 print(' build/pcc/pcc built.')
+
