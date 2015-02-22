@@ -142,7 +142,7 @@ while true:
             var outHandle = open(filename, fmWrite)
             var result: string
 
-            outHandle.writeln(replace(join(ircmsg[4 .. ircmsg.high], " "), ";", "\n")
+            outHandle.writeln(replace(join(ircmsg[4 .. ircmsg.high], " "), ";", "\n"))
             close(outHandle)
 
             var resultInitial = execCmdEx("nim compile --stackTrace:off --lineTrace:off --threads:off --checks:off --fieldChecks:off --rangeChecks:on --boundChecks:on --overflowChecks:on --assertions:on --floatChecks:off --nanChecks:on --infChecks:off --opt:none --warnings:off --hints:off --threadanalysis:off --verbosity:0 --cc:ucc " & filename)
